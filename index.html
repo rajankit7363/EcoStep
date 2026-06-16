@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoStep — Track. Reduce. Reward.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest:#1B3A2B;
+    --forest-deep:#102019;
+    --moss:#4A7856;
+    --moss-light:#7FA888;
+    --sand:#F5EFE3;
+    --sand-warm:#EFE6D4;
+    --clay:#D4734A;
+    --clay-deep:#B8572F;
+    --sky:#A8C9D9;
+    --ink:#1B2420;
+    --line:rgba(27,58,43,0.14);
+    --shadow:0 10px 30px -10px rgba(27,58,43,0.25);
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    background:var(--sand);
+    color:var(--ink);
+    line-height:1.5;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--forest);
+    margin:0;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+
+  /* ===== NAV ===== */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:rgba(245,239,227,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    max-width:1180px; margin:0 auto; padding:16px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .logo{display:flex; align-items:center; gap:10px; font-family:'Fraunces',serif; font-weight:700; font-size:1.3rem; color:var(--forest);}
+  .logo-mark{
+    width:34px; height:34px; border-radius:10px;
+    background:var(--forest); display:flex; align-items:center; justify-content:center;
+    color:var(--sand); font-size:1.1rem;
+  }
+  .nav-links{display:flex; gap:28px; align-items:center;}
+  .nav-links a{font-size:0.92rem; font-weight:600; text-decoration:none; color:var(--ink); opacity:0.75; transition:opacity .2s;}
+  .nav-links a:hover{opacity:1;}
+  .points-pill{
+    display:flex; align-items:center; gap:8px;
+    background:var(--forest); color:var(--sand);
+    padding:8px 16px; border-radius:30px; font-weight:700; font-size:0.9rem;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .points-pill .leaf{font-size:1rem;}
+
+  /* ===== HERO ===== */
+  .hero{
+    max-width:1180px; margin:0 auto; padding:64px 24px 40px;
+    display:grid; grid-template-columns:1.1fr 0.9fr; gap:60px; align-items:center;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'JetBrains Mono',monospace; font-size:0.78rem; font-weight:600;
+    letter-spacing:0.12em; text-transform:uppercase; color:var(--moss);
+    background:rgba(74,120,86,0.1); padding:6px 14px; border-radius:20px;
+    margin-bottom:22px;
+  }
+  .hero h1{font-size:3.4rem; line-height:1.08; margin-bottom:20px;}
+  .hero h1 em{font-style:italic; color:var(--clay);}
+  .hero p{font-size:1.12rem; color:rgba(27,36,32,0.7); max-width:480px; margin-bottom:30px;}
+  .hero-cta{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn{
+    border:none; cursor:pointer; font-family:'Inter',sans-serif; font-weight:700;
+    font-size:0.95rem; padding:14px 28px; border-radius:12px;
+    transition:transform .15s, box-shadow .15s;
+  }
+  .btn:focus-visible{outline:3px solid var(--clay); outline-offset:2px;}
+  .btn-primary{background:var(--clay); color:white; box-shadow:0 8px 20px -6px rgba(212,115,74,0.55);}
+  .btn-primary:hover{transform:translateY(-2px);}
+  .btn-secondary{background:transparent; color:var(--forest); border:1.5px solid var(--forest);}
+  .btn-secondary:hover{background:var(--forest); color:var(--sand);}
+
+  /* ===== FOOTPRINT TRAIL (signature element) ===== */
+  .trail-wrap{
+    position:relative; background:var(--forest-deep); border-radius:24px;
+    padding:32px; overflow:hidden; box-shadow:var(--shadow); min-height:380px;
+  }
+  .trail-wrap::before{
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 80% 20%, rgba(127,168,136,0.18), transparent 60%);
+  }
+  .trail-header{display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:2;}
+  .trail-title{color:var(--sand); font-family:'Fraunces',serif; font-size:1.05rem; opacity:0.85;}
+  .trail-score{font-family:'JetBrains Mono',monospace; color:var(--sky); font-size:0.8rem; font-weight:600;}
+  .footsteps{
+    position:relative; z-index:2; display:flex; flex-direction:column; gap:8px;
+    margin-top:30px; align-items:center;
+  }
+  .step-row{display:flex; gap:34px; align-items:center;}
+  .step-row.right{transform:translateX(28px);}
+  .foot{
+    width:46px; height:74px; position:relative; opacity:0.18;
+    transition:opacity .6s, filter .6s; filter:grayscale(1);
+  }
+  .foot.filled{opacity:1; filter:grayscale(0);}
+  .foot svg{width:100%; height:100%;}
+  .trail-caption{
+    position:relative; z-index:2; text-align:center; margin-top:26px;
+    color:var(--moss-light); font-size:0.85rem; max-width:280px; margin-left:auto; margin-right:auto;
+  }
+  .trail-caption b{color:var(--sand);}
+
+  /* ===== SECTIONS ===== */
+  section{max-width:1180px; margin:0 auto; padding:90px 24px;}
+  .section-head{max-width:620px; margin-bottom:48px;}
+  .section-head .eyebrow{margin-bottom:16px;}
+  .section-head h2{font-size:2.4rem; line-height:1.15; margin-bottom:14px;}
+  .section-head p{color:rgba(27,36,32,0.65); font-size:1.05rem;}
+
+  /* ===== CALCULATOR ===== */
+  #calculator{background:var(--sand-warm); border-radius:32px;}
+  .calc-grid{display:grid; grid-template-columns:1.2fr 1fr; gap:48px; align-items:start;}
+  .calc-form{display:flex; flex-direction:column; gap:24px;}
+  .field-group{
+    background:white; border:1px solid var(--line); border-radius:16px; padding:22px 24px;
+  }
+  .field-group label{
+    display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px;
+    font-weight:700; font-size:0.95rem; color:var(--forest);
+  }
+  .field-group label .unit{font-family:'JetBrains Mono',monospace; font-weight:600; font-size:0.85rem; color:var(--clay); background:rgba(212,115,74,0.1); padding:3px 10px; border-radius:8px;}
+  .field-group .hint{font-size:0.82rem; color:rgba(27,36,32,0.55); margin-top:8px;}
+  input[type=range]{
+    width:100%; -webkit-appearance:none; height:6px; border-radius:4px;
+    background:linear-gradient(90deg, var(--moss), var(--moss)) , var(--line);
+    background-size: var(--fill, 50%) 100%, 100% 100%;
+    background-repeat:no-repeat;
+    cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:22px; height:22px; border-radius:50%;
+    background:var(--forest); border:3px solid var(--sand); box-shadow:0 2px 6px rgba(0,0,0,0.2);
+    cursor:pointer; margin-top:-1px;
+  }
+  input[type=range]::-moz-range-thumb{
+    width:22px; height:22px; border-radius:50%;
+    background:var(--forest); border:3px solid var(--sand); cursor:pointer;
+  }
+  select{
+    width:100%; padding:11px 14px; border-radius:10px; border:1.5px solid var(--line);
+    font-family:'Inter',sans-serif; font-size:0.95rem; background:white; color:var(--ink);
+    font-weight:600; cursor:pointer;
+  }
+
+  /* result panel */
+  .result-panel{
+    background:var(--forest); color:var(--sand); border-radius:24px; padding:32px;
+    position:sticky; top:100px; box-shadow:var(--shadow);
+  }
+  .result-panel .label{font-size:0.8rem; text-transform:uppercase; letter-spacing:0.12em; font-family:'JetBrains Mono',monospace; color:var(--moss-light); margin-bottom:8px;}
+  .result-big{font-family:'Fraunces',serif; font-size:3.6rem; font-weight:700; line-height:1; margin-bottom:4px; display:flex; align-items:baseline; gap:10px;}
+  .result-big span.unit{font-size:1.1rem; font-weight:500; color:var(--moss-light); font-family:'Inter',sans-serif;}
+  .vs-line{display:flex; align-items:center; gap:8px; margin:6px 0 22px; font-size:0.9rem; color:var(--sky);}
+  .breakdown{display:flex; flex-direction:column; gap:10px; margin-bottom:24px;}
+  .bd-row{display:flex; justify-content:space-between; align-items:center; font-size:0.88rem;}
+  .bd-row .bar-bg{flex:1; height:6px; background:rgba(255,255,255,0.12); border-radius:4px; margin:0 12px; overflow:hidden;}
+  .bd-row .bar-fill{height:100%; background:var(--clay); border-radius:4px; transition:width .4s ease;}
+  .bd-row .bd-val{font-family:'JetBrains Mono',monospace; min-width:54px; text-align:right;}
+  .tip-box{
+    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:16px 18px;
+    font-size:0.88rem; line-height:1.55;
+  }
+  .tip-box b{color:var(--clay);}
+  .log-btn{
+    margin-top:20px; width:100%; background:var(--clay); color:white; border:none;
+    padding:14px; border-radius:12px; font-weight:700; font-size:0.95rem; cursor:pointer;
+    transition:transform .15s;
+  }
+  .log-btn:hover{transform:translateY(-2px);}
+  .log-btn:disabled{opacity:0.5; cursor:not-allowed; transform:none;}
+
+  /* ===== HOW IT WORKS ===== */
+  .steps-row{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+  .step-card{
+    background:white; border:1px solid var(--line); border-radius:20px; padding:30px;
+    transition:transform .2s, box-shadow .2s;
+  }
+  .step-card:hover{transform:translateY(-4px); box-shadow:var(--shadow);}
+  .step-num{
+    font-family:'JetBrains Mono',monospace; font-size:0.8rem; font-weight:700; color:var(--clay);
+    margin-bottom:14px; letter-spacing:0.1em;
+  }
+  .step-card h3{font-size:1.25rem; margin-bottom:10px;}
+  .step-card p{font-size:0.92rem; color:rgba(27,36,32,0.65);}
+
+  /* ===== REWARDS ===== */
+  #rewards{background:var(--forest-deep); border-radius:32px; color:var(--sand);}
+  #rewards .section-head h2, #rewards .section-head p{color:var(--sand);}
+  #rewards .section-head p{color:rgba(245,239,227,0.6);}
+  #rewards .eyebrow{background:rgba(127,168,136,0.15); color:var(--moss-light);}
+  .reward-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:18px;}
+  .reward-card{
+    background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:18px;
+    padding:24px; display:flex; flex-direction:column; gap:14px;
+    transition:transform .2s, border-color .2s;
+  }
+  .reward-card:hover{transform:translateY(-4px); border-color:var(--moss-light);}
+  .reward-icon{
+    width:46px; height:46px; border-radius:12px; background:var(--moss);
+    display:flex; align-items:center; justify-content:center; font-size:1.4rem;
+  }
+  .reward-card h3{font-size:1.05rem; color:var(--sand); font-family:'Fraunces',serif;}
+  .reward-card .desc{font-size:0.85rem; color:rgba(245,239,227,0.55); flex:1;}
+  .reward-cost{
+    display:flex; justify-content:space-between; align-items:center;
+    border-top:1px solid rgba(255,255,255,0.1); padding-top:14px;
+  }
+  .reward-cost .cost{font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--clay); font-size:0.95rem;}
+  .redeem-btn{
+    background:var(--sand); color:var(--forest); border:none; padding:9px 18px;
+    border-radius:10px; font-weight:700; font-size:0.82rem; cursor:pointer; transition:background .15s;
+  }
+  .redeem-btn:hover{background:var(--moss-light);}
+  .redeem-btn:disabled{background:rgba(255,255,255,0.1); color:rgba(245,239,227,0.4); cursor:not-allowed;}
+
+  /* ===== LEADERBOARD / COMMUNITY ===== */
+  .leader-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:40px;}
+  .leader-list{display:flex; flex-direction:column; gap:10px;}
+  .leader-row{
+    display:grid; grid-template-columns:36px 1fr auto auto; gap:16px; align-items:center;
+    background:white; border:1px solid var(--line); border-radius:14px; padding:14px 18px;
+  }
+  .leader-row.me{border-color:var(--clay); background:rgba(212,115,74,0.06);}
+  .rank{font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--moss); text-align:center;}
+  .leader-row .name{font-weight:700; font-size:0.95rem;}
+  .leader-row .name .you-tag{font-size:0.7rem; background:var(--clay); color:white; padding:2px 8px; border-radius:6px; margin-left:8px; vertical-align:middle;}
+  .leader-row .co2{font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:rgba(27,36,32,0.6); text-align:right;}
+  .leader-row .pts{font-family:'JetBrains Mono',monospace; font-size:0.85rem; font-weight:700; color:var(--moss); text-align:right;}
+
+  .community-card{
+    background:var(--moss); color:white; border-radius:20px; padding:32px; height:100%;
+    display:flex; flex-direction:column; gap:18px;
+  }
+  .community-card h3{color:white; font-size:1.4rem;}
+  .community-card p{font-size:0.92rem; opacity:0.9;}
+  .progress-track{height:10px; background:rgba(255,255,255,0.2); border-radius:6px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--clay); border-radius:6px;}
+  .community-stat{font-family:'JetBrains Mono',monospace; font-size:0.85rem; opacity:0.85;}
+  .invite-box{
+    background:rgba(255,255,255,0.12); border-radius:12px; padding:16px; font-size:0.88rem;
+    display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
+  }
+  .invite-box .code{font-family:'JetBrains Mono',monospace; font-weight:700; letter-spacing:0.05em;}
+  .copy-btn{background:white; color:var(--forest); border:none; padding:8px 14px; border-radius:8px; font-weight:700; font-size:0.8rem; cursor:pointer;}
+
+  /* ===== FOOTER ===== */
+  footer{
+    border-top:1px solid var(--line); padding:50px 24px; text-align:center;
+    color:rgba(27,36,32,0.5); font-size:0.85rem;
+  }
+  footer .logo{justify-content:center; margin-bottom:14px;}
+
+  /* ===== TOAST ===== */
+  #toast{
+    position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(120%);
+    background:var(--forest); color:var(--sand); padding:16px 28px; border-radius:14px;
+    font-weight:700; font-size:0.92rem; box-shadow:var(--shadow); z-index:999;
+    transition:transform .35s ease; display:flex; align-items:center; gap:10px;
+    max-width:90vw;
+  }
+  #toast.show{transform:translateX(-50%) translateY(0);}
+  #toast .leaf{font-size:1.2rem;}
+
+  @media (max-width: 880px){
+    .hero{grid-template-columns:1fr; gap:40px; padding-top:36px;}
+    .hero h1{font-size:2.4rem;}
+    .calc-grid, .leader-grid{grid-template-columns:1fr;}
+    .result-panel{position:static;}
+    .steps-row{grid-template-columns:1fr;}
+    .reward-grid{grid-template-columns:1fr 1fr;}
+    .nav-links{display:none;}
+    section{padding:60px 18px;}
+  }
+  @media (max-width: 520px){
+    .reward-grid{grid-template-columns:1fr;}
+    .hero h1{font-size:2rem;}
+    .result-big{font-size:2.6rem;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; scroll-behavior:auto !important;}
+  }
+
+  /* ===== DOCUMENT VERIFICATION ===== */
+  #verify{background:var(--sand-warm); border-radius:32px;}
+  .verify-stepper{
+    display:flex; align-items:flex-start; gap:0; margin-bottom:48px;
+    position:relative;
+  }
+  .verify-stepper::before{
+    content:''; position:absolute; top:22px; left:calc(16.66% + 22px);
+    right:calc(16.66% + 22px); height:2px;
+    background:linear-gradient(90deg, var(--moss) var(--prog, 0%), var(--line) var(--prog, 0%));
+    z-index:0; transition:background 0.5s;
+  }
+  .vstep{
+    flex:1; display:flex; flex-direction:column; align-items:center;
+    text-align:center; position:relative; z-index:1;
+  }
+  .vstep-circle{
+    width:44px; height:44px; border-radius:50%; border:2px solid var(--line);
+    background:white; display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:0.9rem;
+    color:rgba(27,36,32,0.35); transition:all 0.4s; margin-bottom:10px;
+    position:relative;
+  }
+  .vstep.active .vstep-circle{
+    background:var(--forest); color:var(--sand); border-color:var(--forest);
+    box-shadow:0 0 0 4px rgba(27,58,43,0.15);
+  }
+  .vstep.done .vstep-circle{
+    background:var(--moss); color:white; border-color:var(--moss);
+  }
+  .vstep.done .vstep-circle::after{content:'✓'; position:absolute;}
+  .vstep.done .vstep-num{display:none;}
+  .vstep-label{font-size:0.82rem; font-weight:700; color:rgba(27,36,32,0.45); letter-spacing:0.04em; text-transform:uppercase; font-family:'JetBrains Mono',monospace;}
+  .vstep.active .vstep-label{color:var(--forest);}
+  .vstep.done .vstep-label{color:var(--moss);}
+
+  /* step panels */
+  .verify-panel{display:none; animation:fadeInUp 0.4s ease both;}
+  .verify-panel.active{display:block;}
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+  /* upload zone */
+  .upload-area{
+    border:2px dashed var(--line); border-radius:20px; padding:48px 32px;
+    text-align:center; background:white; cursor:pointer;
+    transition:border-color 0.2s, background 0.2s;
+    position:relative; overflow:hidden;
+  }
+  .upload-area:hover,.upload-area.drag{border-color:var(--moss); background:rgba(74,120,86,0.04);}
+  .upload-area input[type=file]{
+    position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;
+  }
+  .upload-icon{font-size:2.8rem; margin-bottom:14px;}
+  .upload-area h3{font-size:1.15rem; margin-bottom:8px; color:var(--forest);}
+  .upload-area p{font-size:0.88rem; color:rgba(27,36,32,0.55); margin:0;}
+  .upload-types{
+    display:flex; gap:8px; justify-content:center; margin-top:16px; flex-wrap:wrap;
+  }
+  .type-tag{
+    font-family:'JetBrains Mono',monospace; font-size:0.75rem; font-weight:600;
+    background:rgba(74,120,86,0.1); color:var(--moss); padding:4px 10px; border-radius:6px;
+  }
+
+  /* doc list */
+  .doc-list{display:flex; flex-direction:column; gap:12px; margin-top:24px;}
+  .doc-item{
+    display:flex; align-items:center; gap:16px;
+    background:white; border:1px solid var(--line); border-radius:14px; padding:16px 20px;
+  }
+  .doc-item-icon{font-size:1.6rem; flex-shrink:0;}
+  .doc-item-info{flex:1; min-width:0;}
+  .doc-item-name{font-weight:700; font-size:0.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .doc-item-meta{font-size:0.8rem; color:rgba(27,36,32,0.5); margin-top:2px; font-family:'JetBrains Mono',monospace;}
+  .doc-item-remove{
+    background:none; border:none; cursor:pointer; font-size:1.1rem;
+    color:rgba(27,36,32,0.3); padding:4px; transition:color 0.15s;
+  }
+  .doc-item-remove:hover{color:var(--clay);}
+  .doc-status{
+    display:inline-flex; align-items:center; gap:5px; font-size:0.78rem;
+    font-weight:700; padding:3px 10px; border-radius:8px; margin-top:6px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .doc-status.pending{background:rgba(212,115,74,0.1); color:var(--clay);}
+  .doc-status.verifying{background:rgba(168,201,217,0.25); color:#4a7896;}
+  .doc-status.verified{background:rgba(74,120,86,0.12); color:var(--moss);}
+  .doc-status.failed{background:rgba(200,60,60,0.1); color:#c03c3c;}
+
+  /* required docs checklist */
+  .req-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:28px;}
+  .req-card{
+    background:white; border:1.5px solid var(--line); border-radius:14px; padding:18px 20px;
+    display:flex; gap:14px; align-items:flex-start; transition:border-color 0.2s;
+  }
+  .req-card.fulfilled{border-color:var(--moss);}
+  .req-icon{font-size:1.5rem; flex-shrink:0;}
+  .req-label{font-weight:700; font-size:0.92rem; color:var(--forest); margin-bottom:4px;}
+  .req-desc{font-size:0.8rem; color:rgba(27,36,32,0.55);}
+  .req-tick{
+    width:22px; height:22px; border-radius:50%; border:2px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-size:0.85rem;
+    flex-shrink:0; transition:all 0.3s; margin-left:auto;
+  }
+  .req-card.fulfilled .req-tick{background:var(--moss); border-color:var(--moss); color:white;}
+
+  /* review table */
+  .review-table{width:100%; border-collapse:collapse; font-size:0.9rem; background:white; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(27,58,43,0.07);}
+  .review-table th{background:var(--forest); color:var(--sand); padding:14px 18px; text-align:left; font-family:'JetBrains Mono',monospace; font-size:0.78rem; letter-spacing:0.06em; text-transform:uppercase; font-weight:600;}
+  .review-table td{padding:14px 18px; border-bottom:1px solid var(--line); vertical-align:middle;}
+  .review-table tr:last-child td{border-bottom:none;}
+  .review-table .badge-verified{display:inline-flex; align-items:center; gap:5px; background:rgba(74,120,86,0.1); color:var(--moss); font-weight:700; font-size:0.78rem; padding:4px 10px; border-radius:8px; font-family:'JetBrains Mono',monospace;}
+  .review-table .badge-pending{display:inline-flex; align-items:center; gap:5px; background:rgba(212,115,74,0.1); color:var(--clay); font-weight:700; font-size:0.78rem; padding:4px 10px; border-radius:8px; font-family:'JetBrains Mono',monospace;}
+
+  /* progress bar for step 2 */
+  .verify-progress-wrap{margin:24px 0; background:white; border-radius:16px; padding:24px;}
+  .vp-row{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .vp-label{font-weight:700; font-size:0.9rem; color:var(--forest);}
+  .vp-pct{font-family:'JetBrains Mono',monospace; font-size:0.9rem; color:var(--moss);}
+  .vp-bar{height:8px; background:var(--line); border-radius:6px; overflow:hidden;}
+  .vp-fill{height:100%; background:linear-gradient(90deg, var(--moss), var(--moss-light)); border-radius:6px; transition:width 0.6s ease;}
+  .vp-checks{display:flex; flex-direction:column; gap:10px; margin-top:16px;}
+  .vp-check{display:flex; align-items:center; gap:12px; font-size:0.88rem;}
+  .vp-check-dot{
+    width:20px; height:20px; border-radius:50%; border:2px solid var(--line);
+    flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    font-size:0.7rem; transition:all 0.4s;
+  }
+  .vp-check-dot.pass{background:var(--moss); border-color:var(--moss); color:white;}
+  .vp-check-dot.fail{background:#c03c3c; border-color:#c03c3c; color:white;}
+  .vp-check-dot.spin{border-color:var(--moss); border-top-color:transparent; animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* nav buttons */
+  .verify-nav{display:flex; justify-content:space-between; align-items:center; margin-top:32px;}
+  .btn-verify-back{
+    background:transparent; border:1.5px solid var(--line); color:var(--ink);
+    padding:12px 24px; border-radius:12px; font-weight:700; font-size:0.9rem; cursor:pointer;
+    transition:all 0.15s;
+  }
+  .btn-verify-back:hover{border-color:var(--forest); color:var(--forest);}
+  .btn-verify-next{
+    background:var(--clay); color:white; border:none; padding:12px 28px;
+    border-radius:12px; font-weight:700; font-size:0.9rem; cursor:pointer;
+    transition:transform 0.15s; box-shadow:0 6px 18px -6px rgba(212,115,74,0.5);
+  }
+  .btn-verify-next:hover{transform:translateY(-2px);}
+  .btn-verify-next:disabled{opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none;}
+
+  /* success state */
+  .verify-success{
+    text-align:center; padding:48px 32px; background:white; border-radius:24px;
+    border:1px solid var(--line);
+  }
+  .success-icon{font-size:4rem; margin-bottom:20px;}
+  .verify-success h3{font-size:1.8rem; color:var(--forest); margin-bottom:12px;}
+  .verify-success p{color:rgba(27,36,32,0.65); max-width:420px; margin:0 auto 24px;}
+  .verify-cert{
+    display:inline-flex; align-items:center; gap:10px;
+    background:rgba(74,120,86,0.08); border:1.5px solid var(--moss); border-radius:12px;
+    padding:12px 22px; font-weight:700; color:var(--moss); font-size:0.9rem;
+    font-family:'JetBrains Mono',monospace;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo"><span class="logo-mark">🌿</span> EcoStep</div>
+    <nav class="nav-links">
+      <a href="#calculator">Calculator</a>
+      <a href="#how">How it works</a>
+      <a href="#rewards">Rewards</a>
+      <a href="#community">Community</a>
+      <a href="#verify">Verify Docs</a>
+    </nav>
+    <div class="points-pill"><span class="leaf">🍃</span> <span id="navPoints">0</span> pts</div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <div class="eyebrow">🌍 Carbon Footprint Awareness Platform</div>
+    <h1>See your impact. <em>Shrink it.</em> Get rewarded.</h1>
+    <p>Calculate your monthly CO₂ footprint from travel, electricity, and food in under a minute. Get personalized cuts you can actually make — and earn points redeemable for real coupons on Flipkart, Amazon, Swiggy and mobile recharges.</p>
+    <div class="hero-cta">
+      <a href="#calculator"><button class="btn btn-primary">Calculate my footprint →</button></a>
+      <a href="#rewards"><button class="btn btn-secondary">See rewards</button></a>
+    </div>
+  </div>
+
+  <div class="trail-wrap">
+    <div class="trail-header">
+      <div class="trail-title">Your Footprint Trail</div>
+      <div class="trail-score" id="trailScoreLabel">0 / 5 steps lightened</div>
+    </div>
+    <div class="footsteps" id="footstepsRow"></div>
+    <div class="trail-caption">
+      Every time you log a greener choice, a footprint on the trail turns into a <b>leaf</b>. Fill all 5 to unlock a bonus reward.
+    </div>
+  </div>
+</div>
+
+<!-- CALCULATOR -->
+<section id="calculator">
+  <div class="section-head">
+    <div class="eyebrow">Step 1 — Measure</div>
+    <h2>What's your monthly carbon footprint?</h2>
+    <p>Adjust the sliders to match your typical month. We'll estimate your CO₂ output in kilograms and compare it to the average Indian household (≈ 1,800 kg CO₂/month).</p>
+  </div>
+
+  <div class="calc-grid">
+    <div class="calc-form">
+
+      <div class="field-group">
+        <label>🚗 Vehicle travel <span class="unit" id="kmVal">120 km/week</span></label>
+        <input type="range" id="kmRange" min="0" max="500" value="120" step="5">
+        <select id="vehicleType" style="margin-top:14px;">
+          <option value="0.192">Petrol car (0.192 kg CO₂/km)</option>
+          <option value="0.171">Diesel car (0.171 kg CO₂/km)</option>
+          <option value="0.103">Two-wheeler / bike (0.103 kg CO₂/km)</option>
+          <option value="0.41">SUV (0.41 kg CO₂/km)</option>
+          <option value="0.05">Electric vehicle (0.05 kg CO₂/km, grid mix)</option>
+          <option value="0.089">Bus / public transport (0.089 kg CO₂/km)</option>
+        </select>
+        <div class="hint">Includes commute, errands and weekend trips.</div>
+      </div>
+
+      <div class="field-group">
+        <label>❄️ Air conditioning / cooling <span class="unit" id="acVal">6 hrs/day</span></label>
+        <input type="range" id="acRange" min="0" max="16" value="6" step="0.5">
+        <div class="hint">Average split AC ≈ 1.0 kg CO₂ per running hour (grid electricity).</div>
+      </div>
+
+      <div class="field-group">
+        <label>⚡ Other home electricity <span class="unit" id="elecVal">180 kWh/month</span></label>
+        <input type="range" id="elecRange" min="0" max="600" value="180" step="10">
+        <div class="hint">Lighting, fridge, fans, appliances. India grid average ≈ 0.82 kg CO₂/kWh.</div>
+      </div>
+
+      <div class="field-group">
+        <label>🍽️ Diet pattern <span class="unit" id="dietVal">Mixed</span></label>
+        <input type="range" id="dietRange" min="0" max="3" value="1" step="1">
+        <div class="hint" id="dietHint">Mostly vegetarian with meat 2–3x/week — ≈ 75 kg CO₂/month.</div>
+      </div>
+
+      <div class="field-group">
+        <label>✈️ Flights this year <span class="unit" id="flightVal">1 short-haul</span></label>
+        <input type="range" id="flightRange" min="0" max="6" value="1" step="1">
+        <div class="hint">Averaged across 12 months. Short-haul ≈ 250 kg CO₂ per flight.</div>
+      </div>
+
+    </div>
+
+    <!-- RESULT PANEL -->
+    <div class="result-panel">
+      <div class="label">Estimated monthly footprint</div>
+      <div class="result-big"><span id="totalCo2">0</span> <span class="unit">kg CO₂e</span></div>
+      <div class="vs-line" id="vsLine">— vs. average household</div>
+
+      <div class="breakdown" id="breakdown"></div>
+
+      <div class="tip-box" id="tipBox">
+        Adjust the sliders to see where your emissions come from — and how many points you could earn by cutting them.
+      </div>
+
+      <button class="log-btn" id="logBtn">Log this month & earn points 🍃</button>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-head">
+    <div class="eyebrow">Step 2 — Reduce</div>
+    <h2>Small swaps, tracked automatically</h2>
+    <p>Every time you log a lower footprint than last month, EcoStep credits points based on the kilograms you saved — no manual proof needed.</p>
+  </div>
+  <div class="steps-row">
+    <div class="step-card">
+      <div class="step-num">CALCULATE</div>
+      <h3>Log your month</h3>
+      <p>Use the calculator above weekly or monthly. Your history builds a personal baseline so reductions are measured against <em>you</em>, not a generic average.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">CUT</div>
+      <h3>Follow tailored nudges</h3>
+      <p>EcoStep highlights your single biggest emission source — vehicle, AC, electricity, diet or flights — and suggests the one swap with the highest impact-to-effort ratio.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">EARN</div>
+      <h3>1 point per kg CO₂ saved</h3>
+      <p>Reduce your footprint by 50 kg vs. last month → earn 50 leaf points. Points are redeemable instantly for e-commerce and recharge coupons.</p>
+    </div>
+  </div>
+</section>
+
+<!-- REWARDS -->
+<section id="rewards">
+  <div class="section-head">
+    <div class="eyebrow">Step 3 — Get rewarded</div>
+    <h2>Turn leaf points into real savings</h2>
+    <p>Redeem points the moment you have enough — no minimum thresholds, no waiting periods.</p>
+  </div>
+  <div class="reward-grid" id="rewardGrid"></div>
+</section>
+
+<!-- COMMUNITY -->
+<section id="community">
+  <div class="section-head">
+    <div class="eyebrow">Step 4 — Multiply</div>
+    <h2>Greener together</h2>
+    <p>Compare progress with friends, join neighborhood challenges, and unlock bonus rewards as a group.</p>
+  </div>
+  <div class="leader-grid">
+    <div class="leader-list" id="leaderList"></div>
+    <div class="community-card">
+      <h3>🌳 Neighborhood Challenge: Bhopal Green Belt</h3>
+      <p>1,248 / 2,000 households have logged a reduction this month. At 2,000, EcoStep funds 100 saplings planted in MP Forest Department drives.</p>
+      <div class="progress-track"><div class="progress-fill" style="width:62%"></div></div>
+      <div class="community-stat">62% complete · 752 households to go</div>
+      <div class="invite-box">
+        <span>Your referral code: <span class="code">ECO-RAVI21</span></span>
+        <button class="copy-btn" id="copyBtn">Copy code</button>
+      </div>
+      <p style="font-size:0.85rem;">Each friend who logs their first month gives you both <b>+25 bonus points</b>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DOCUMENT VERIFICATION -->
+<section id="verify">
+  <div class="section-head">
+    <div class="eyebrow">🛡️ Document Verification</div>
+    <h2>Verify your green credentials in 3 steps</h2>
+    <p>Upload proof documents for EV ownership, solar installation, or waste management compliance. Our 3-step verification unlocks bonus leaf points and a verified badge on your profile.</p>
+  </div>
+
+  <!-- Stepper -->
+  <div class="verify-stepper" id="verifyStepper">
+    <div class="vstep active" id="vstep1">
+      <div class="vstep-circle"><span class="vstep-num">1</span></div>
+      <div class="vstep-label">Upload Docs</div>
+    </div>
+    <div class="vstep" id="vstep2">
+      <div class="vstep-circle"><span class="vstep-num">2</span></div>
+      <div class="vstep-label">Auto-Check</div>
+    </div>
+    <div class="vstep" id="vstep3">
+      <div class="vstep-circle"><span class="vstep-num">3</span></div>
+      <div class="vstep-label">Confirmation</div>
+    </div>
+  </div>
+
+  <!-- PANEL 1: Upload -->
+  <div class="verify-panel active" id="vpanel1">
+    <p style="font-weight:700; color:var(--forest); margin-bottom:16px;">Required documents — upload any that apply to you:</p>
+    <div class="req-grid" id="reqGrid">
+      <div class="req-card" data-req="ev">
+        <div class="req-icon">🔌</div>
+        <div style="flex:1;">
+          <div class="req-label">EV Registration Certificate</div>
+          <div class="req-desc">RC book or VAHAN certificate for electric vehicle ownership.</div>
+        </div>
+        <div class="req-tick" id="tick-ev"></div>
+      </div>
+      <div class="req-card" data-req="solar">
+        <div class="req-icon">☀️</div>
+        <div style="flex:1;">
+          <div class="req-label">Solar Panel Installation</div>
+          <div class="req-desc">DISCOM approval letter or installation completion report.</div>
+        </div>
+        <div class="req-tick" id="tick-solar"></div>
+      </div>
+      <div class="req-card" data-req="waste">
+        <div class="req-icon">♻️</div>
+        <div style="flex:1;">
+          <div class="req-label">Waste Management Compliance</div>
+          <div class="req-desc">Municipality certificate or society composting registration.</div>
+        </div>
+        <div class="req-tick" id="tick-waste"></div>
+      </div>
+      <div class="req-card" data-req="transport">
+        <div class="req-icon">🚌</div>
+        <div style="flex:1;">
+          <div class="req-label">Public Transport Pass</div>
+          <div class="req-desc">Monthly metro, bus pass, or employer commute subsidy letter.</div>
+        </div>
+        <div class="req-tick" id="tick-transport"></div>
+      </div>
+    </div>
+
+    <div class="upload-area" id="uploadArea">
+      <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png">
+      <div class="upload-icon">📂</div>
+      <h3>Drop files here or click to browse</h3>
+      <p>Upload your green credential documents — each verified document earns +100 bonus leaf points</p>
+      <div class="upload-types">
+        <span class="type-tag">PDF</span>
+        <span class="type-tag">JPG</span>
+        <span class="type-tag">PNG</span>
+        <span class="type-tag">Max 5 MB each</span>
+      </div>
+    </div>
+
+    <div class="doc-list" id="docList"></div>
+
+    <div class="verify-nav">
+      <span style="font-size:0.85rem; color:rgba(27,36,32,0.5);" id="uploadHint">Upload at least one document to continue</span>
+      <button class="btn-verify-next" id="btnNext1" disabled onclick="goStep(2)">Run Verification Checks →</button>
+    </div>
+  </div>
+
+  <!-- PANEL 2: Auto-Check -->
+  <div class="verify-panel" id="vpanel2">
+    <div class="verify-progress-wrap">
+      <div class="vp-row">
+        <div class="vp-label">Running automated checks…</div>
+        <div class="vp-pct" id="vpPct">0%</div>
+      </div>
+      <div class="vp-bar"><div class="vp-fill" id="vpFill" style="width:0%"></div></div>
+      <div class="vp-checks" id="vpChecks">
+        <div class="vp-check"><div class="vp-check-dot" id="chk1"></div><span>File integrity & format validation</span></div>
+        <div class="vp-check"><div class="vp-check-dot" id="chk2"></div><span>Document authenticity scan (metadata check)</span></div>
+        <div class="vp-check"><div class="vp-check-dot" id="chk3"></div><span>Issuer / authority cross-reference</span></div>
+        <div class="vp-check"><div class="vp-check-dot" id="chk4"></div><span>Date validity &amp; expiry check</span></div>
+        <div class="vp-check"><div class="vp-check-dot" id="chk5"></div><span>Carbon credit eligibility assessment</span></div>
+      </div>
+    </div>
+
+    <div id="checkResults" style="display:none;">
+      <p style="font-weight:700; color:var(--forest); margin-bottom:14px;">Document status after checks:</p>
+      <div class="doc-list" id="checkedDocList"></div>
+    </div>
+
+    <div class="verify-nav">
+      <button class="btn-verify-back" onclick="goStep(1)">← Back</button>
+      <button class="btn-verify-next" id="btnNext2" disabled onclick="goStep(3)">Proceed to Confirmation →</button>
+    </div>
+  </div>
+
+  <!-- PANEL 3: Confirmation -->
+  <div class="verify-panel" id="vpanel3">
+    <p style="font-weight:700; color:var(--forest); margin-bottom:16px;">Review your verified documents before final submission:</p>
+    <table class="review-table" id="reviewTable">
+      <thead>
+        <tr>
+          <th>Document</th>
+          <th>Type</th>
+          <th>Size</th>
+          <th>Status</th>
+          <th>Points</th>
+        </tr>
+      </thead>
+      <tbody id="reviewBody"></tbody>
+    </table>
+
+    <div style="background:white; border-radius:16px; padding:24px; margin-top:20px; border:1px solid var(--line); display:flex; gap:20px; align-items:flex-start;">
+      <span style="font-size:1.8rem;">🍃</span>
+      <div>
+        <div style="font-weight:700; color:var(--forest); margin-bottom:4px;">Points you'll earn from this submission</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:1.4rem; color:var(--clay); font-weight:700;" id="totalBonusPts">+0 pts</div>
+        <div style="font-size:0.83rem; color:rgba(27,36,32,0.55); margin-top:4px;">Credited instantly upon approval — verified status also unlocks a 🏅 green badge.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <label style="display:flex; align-items:flex-start; gap:12px; cursor:pointer; font-size:0.88rem; color:rgba(27,36,32,0.7);">
+        <input type="checkbox" id="consentCheck" style="margin-top:3px; accent-color:var(--moss); width:16px; height:16px; flex-shrink:0;">
+        I confirm that the documents I have uploaded are genuine and I authorise EcoStep to use them solely for green credential verification purposes.
+      </label>
+    </div>
+
+    <div class="verify-nav">
+      <button class="btn-verify-back" onclick="goStep(2)">← Back</button>
+      <button class="btn-verify-next" id="btnSubmit" disabled onclick="submitVerification()">Submit for Verification ✓</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS STATE -->
+  <div class="verify-panel" id="vpanelSuccess">
+    <div class="verify-success">
+      <div class="success-icon">🎉</div>
+      <h3>Documents submitted successfully!</h3>
+      <p>Your green credential documents are under review. Most submissions are approved within 24 hours. You'll earn your bonus leaf points the moment they are approved.</p>
+      <div class="verify-cert">✅ &nbsp; Verification ID: ECO-VRF-<span id="verifyId"></span></div>
+      <div style="margin-top:24px;">
+        <button class="btn btn-secondary" onclick="resetVerification()" style="font-size:0.9rem; padding:12px 24px;">Submit more documents</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="logo">🌿 EcoStep</div>
+  <p>Carbon estimates use standard India-average emission factors (CEA grid factor, ARAI vehicle data) for awareness purposes — actual impact varies by region and supplier.</p>
+  <p style="margin-top:8px;">Made for Challenge 3 — Carbon Footprint Awareness Platform</p>
+</footer>
+
+<div id="toast"><span class="leaf">🍃</span><span id="toastMsg"></span></div>
+
+<script>
+  // ---------- STATE ----------
+  let points = 240; // starting balance for demo realism
+  let lastFootprint = 1450; // simulated "last month" baseline
+  let filledSteps = 2; // out of 5
+  let toastTimer = null;
+
+  const dietData = [
+    {label:'Vegan', co2:35, hint:'Plant-based diet — ≈ 35 kg CO₂/month, the lowest food footprint.'},
+    {label:'Mixed', co2:75, hint:'Mostly vegetarian with meat 2–3x/week — ≈ 75 kg CO₂/month.'},
+    {label:'Meat-heavy', co2:135, hint:'Meat with most meals — ≈ 135 kg CO₂/month.'},
+    {label:'High red meat', co2:190, hint:'Frequent red meat & dairy — ≈ 190 kg CO₂/month, the highest food footprint.'}
+  ];
+
+  const rewards = [
+    {icon:'🛒', title:'Flipkart ₹100 voucher', desc:'Instant discount code for orders above ₹500 on Flipkart.', cost:150},
+    {icon:'📱', title:'₹50 mobile recharge', desc:'Works with Jio, Airtel, Vi & BSNL prepaid plans.', cost:80},
+    {icon:'🍔', title:'Swiggy ₹75 off', desc:'Flat discount on your next food delivery order.', cost:110},
+    {icon:'🛍️', title:'Amazon ₹150 voucher', desc:'Redeemable on eligible products across categories.', cost:220},
+    {icon:'🚌', title:'₹100 metro/bus card top-up', desc:'Encourages continued use of public transport.', cost:140},
+    {icon:'🌳', title:'Plant a tree (your name)', desc:'EcoStep plants a sapling and sends you GPS-tagged proof.', cost:60},
+    {icon:'🔌', title:'BBPS electricity bill ₹120 off', desc:'Cashback on your next electricity bill payment.', cost:180},
+    {icon:'🏅', title:'Eco Champion badge + 2x points week', desc:'Unlock a profile badge and double points for 7 days.', cost:300},
+  ];
+
+  // ---------- ELEMENTS ----------
+  const kmRange = document.getElementById('kmRange');
+  const acRange = document.getElementById('acRange');
+  const elecRange = document.getElementById('elecRange');
+  const dietRange = document.getElementById('dietRange');
+  const flightRange = document.getElementById('flightRange');
+
+  const kmVal = document.getElementById('kmVal');
+  const acVal = document.getElementById('acVal');
+  const elecVal = document.getElementById('elecVal');
+  const dietVal = document.getElementById('dietVal');
+  const flightVal = document.getElementById('flightVal');
+  const dietHint = document.getElementById('dietHint');
+
+  const totalCo2El = document.getElementById('totalCo2');
+  const vsLine = document.getElementById('vsLine');
+  const breakdownEl = document.getElementById('breakdown');
+  const tipBox = document.getElementById('tipBox');
+  const logBtn = document.getElementById('logBtn');
+  const navPoints = document.getElementById('navPoints');
+
+  // ---------- SLIDER FILL STYLING ----------
+  function styleSlider(input){
+    const pct = ((input.value - input.min) / (input.max - input.min)) * 100;
+    input.style.setProperty('--fill', pct + '%');
+  }
+
+  // ---------- CALCULATION ----------
+  const AVG_HOUSEHOLD = 1800; // kg CO2/month reference
+
+  function calc(){
+    const km = parseFloat(kmRange.value);
+    const factor = parseFloat(document.getElementById('vehicleType').value);
+    const vehicleCo2 = km * 4.345 * factor; // weekly km -> monthly
+
+    const acHrs = parseFloat(acRange.value);
+    const acCo2 = acHrs * 30 * 1.0;
+
+    const elec = parseFloat(elecRange.value);
+    const elecCo2 = elec * 0.82;
+
+    const dietIdx = parseInt(dietRange.value);
+    const dietCo2 = dietData[dietIdx].co2;
+
+    const flights = parseFloat(flightRange.value);
+    const flightCo2 = (flights * 250) / 12;
+
+    const total = vehicleCo2 + acCo2 + elecCo2 + dietCo2 + flightCo2;
+
+    return {
+      total, vehicleCo2, acCo2, elecCo2, dietCo2, flightCo2
+    };
+  }
+
+  function biggestSource(r){
+    const items = [
+      {name:'Vehicle travel', val:r.vehicleCo2, tip:'Switch 2 days/week to public transport or carpool — could cut roughly 15–20% of your vehicle emissions.'},
+      {name:'AC / cooling', val:r.acCo2, tip:'Set your AC to 24°C instead of 18°C and use a timer at night — typically saves 20–30% of cooling emissions.'},
+      {name:'Home electricity', val:r.elecCo2, tip:'Switch to LED bulbs and unplug idle chargers — small habits that add up to 10–15% savings.'},
+      {name:'Diet', val:r.dietCo2, tip:'Try 2 meat-free days a week — even a partial shift toward plant-based meals meaningfully lowers your food footprint.'},
+      {name:'Flights', val:r.flightCo2, tip:'Combine trips or choose direct flights (fewer take-offs/landings = less fuel burned per trip).'}
+    ];
+    items.sort((a,b)=>b.val-a.val);
+    return items[0];
+  }
+
+  function render(){
+    kmVal.textContent = kmRange.value + ' km/week';
+    styleSlider(kmRange);
+
+    acVal.textContent = acRange.value + ' hrs/day';
+    styleSlider(acRange);
+
+    elecVal.textContent = elecRange.value + ' kWh/month';
+    styleSlider(elecRange);
+
+    const d = dietData[parseInt(dietRange.value)];
+    dietVal.textContent = d.label;
+    dietHint.textContent = d.hint;
+    styleSlider(dietRange);
+
+    const fl = parseInt(flightRange.value);
+    flightVal.textContent = fl === 0 ? 'None' : (fl + (fl===1?' short-haul':' short-haul (avg)'));
+    styleSlider(flightRange);
+
+    const r = calc();
+    const total = Math.round(r.total);
+    totalCo2El.textContent = total.toLocaleString();
+
+    const diff = AVG_HOUSEHOLD - total;
+    if(diff > 0){
+      vsLine.innerHTML = `🟢 <b style="color:#A8E6B8">${diff} kg lower</b> than the average household (1,800 kg)`;
+    } else if (diff < 0) {
+      vsLine.innerHTML = `🔴 <b style="color:#F2B8A0">${Math.abs(diff)} kg higher</b> than the average household (1,800 kg)`;
+    } else {
+      vsLine.textContent = 'Exactly at the average household level (1,800 kg)';
+    }
+
+    // breakdown bars
+    const parts = [
+      {name:'Vehicle', val:r.vehicleCo2},
+      {name:'AC / cooling', val:r.acCo2},
+      {name:'Electricity', val:r.elecCo2},
+      {name:'Diet', val:r.dietCo2},
+      {name:'Flights', val:r.flightCo2}
+    ];
+    const max = Math.max(...parts.map(p=>p.val), 1);
+    breakdownEl.innerHTML = parts.map(p => `
+      <div class="bd-row">
+        <span>${p.name}</span>
+        <span class="bar-bg"><span class="bar-fill" style="width:${Math.max((p.val/max)*100,3)}%"></span></span>
+        <span class="bd-val">${Math.round(p.val)} kg</span>
+      </div>
+    `).join('');
+
+    // tip
+    const bs = biggestSource(r);
+    const potentialSave = Math.round(bs.val * 0.2);
+    tipBox.innerHTML = `<b>Your biggest source: ${bs.name} (${Math.round(bs.val)} kg).</b> ${bs.tip} A ~20% cut here saves about <b>${potentialSave} kg CO₂</b> — worth roughly <b>${potentialSave} leaf points</b>.`;
+
+    // log button state
+    if(total < lastFootprint){
+      logBtn.disabled = false;
+      logBtn.textContent = `Log this month & earn ${lastFootprint - total} points 🍃`;
+    } else {
+      logBtn.disabled = false;
+      logBtn.textContent = `Log this month (no reduction yet — keep adjusting)`;
+    }
+
+    return total;
+  }
+
+  // ---------- LOGGING ----------
+  logBtn.addEventListener('click', () => {
+    const total = calc().total;
+    const saved = Math.round(lastFootprint - total);
+    if(saved > 0){
+      points += saved;
+      lastFootprint = Math.round(total);
+      navPoints.textContent = points.toLocaleString();
+      updateRewardStates();
+      showToast(`+${saved} points earned — your footprint dropped to ${Math.round(total)} kg CO₂!`);
+      if(filledSteps < 5){
+        filledSteps++;
+        renderTrail();
+      }
+    } else {
+      lastFootprint = Math.round(total);
+      showToast(`Logged. No reduction this time — try adjusting one slider for next month's bonus.`);
+    }
+    render();
+  });
+
+  // ---------- REWARDS ----------
+  const rewardGrid = document.getElementById('rewardGrid');
+  function renderRewards(){
+    rewardGrid.innerHTML = rewards.map((r,i) => `
+      <div class="reward-card">
+        <div class="reward-icon">${r.icon}</div>
+        <h3>${r.title}</h3>
+        <div class="desc">${r.desc}</div>
+        <div class="reward-cost">
+          <span class="cost">${r.cost} pts</span>
+          <button class="redeem-btn" data-idx="${i}" ${points < r.cost ? 'disabled' : ''}>Redeem</button>
+        </div>
+      </div>
+    `).join('');
+    rewardGrid.querySelectorAll('.redeem-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.idx);
+        const r = rewards[idx];
+        if(points >= r.cost){
+          points -= r.cost;
+          navPoints.textContent = points.toLocaleString();
+          showToast(`Redeemed: ${r.title}. Coupon code sent — check your rewards inbox!`);
+          updateRewardStates();
+        }
+      });
+    });
+  }
+  function updateRewardStates(){
+    rewardGrid.querySelectorAll('.redeem-btn').forEach((btn,i) => {
+      btn.disabled = points < rewards[i].cost;
+    });
+  }
+
+  // ---------- LEADERBOARD ----------
+  const leaderData = [
+    {name:'Ananya R.', co2: 980, pts: 1240},
+    {name:'Vikram S.', co2: 1120, pts: 980},
+    {name:'You', co2: 1450, pts: 240, me:true},
+    {name:'Priya M.', co2: 1510, pts: 210},
+    {name:'Karthik N.', co2: 1670, pts: 150},
+  ];
+  const leaderList = document.getElementById('leaderList');
+  function renderLeaderboard(){
+    leaderList.innerHTML = leaderData.map((p,i)=>`
+      <div class="leader-row ${p.me?'me':''}">
+        <div class="rank">#${i+1}</div>
+        <div class="name">${p.name}${p.me?'<span class="you-tag">YOU</span>':''}</div>
+        <div class="co2">${p.co2.toLocaleString()} kg CO₂</div>
+        <div class="pts">${p.pts.toLocaleString()} pts</div>
+      </div>
+    `).join('');
+  }
+
+  // ---------- FOOTPRINT TRAIL ----------
+  const footstepsRow = document.getElementById('footstepsRow');
+  const trailScoreLabel = document.getElementById('trailScoreLabel');
+  const FOOT_SVG = `<svg viewBox="0 0 46 74" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M23 2c-6 0-9 6-9 13 0 5 2 8 2 13 0 7-7 12-7 24 0 12 6 20 14 20s14-8 14-20c0-12-7-17-7-24 0-5 2-8 2-13 0-7-3-13-9-13z"/>
+  </svg>`;
+  function renderTrail(){
+    footstepsRow.innerHTML = '';
+    for(let row=0; row<3; row++){
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'step-row' + (row % 2 === 1 ? ' right' : '');
+      const cols = row === 2 ? 1 : 2;
+      for(let c=0; c<cols; c++){
+        const idx = row*2 + c;
+        if(idx >= 5) continue;
+        const foot = document.createElement('div');
+        foot.className = 'foot' + (idx < filledSteps ? ' filled' : '');
+        foot.style.color = idx % 2 === 0 ? '#7FA888' : '#A8C9D9';
+        foot.innerHTML = FOOT_SVG;
+        rowDiv.appendChild(foot);
+      }
+      footstepsRow.appendChild(rowDiv);
+    }
+    trailScoreLabel.textContent = `${filledSteps} / 5 steps lightened`;
+  }
+
+  // ---------- TOAST ----------
+  function showToast(msg){
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>toast.classList.remove('show'), 3800);
+  }
+
+  // ---------- COPY REFERRAL ----------
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    showToast('Referral code copied: ECO-RAVI21');
+  });
+
+  // ========== DOCUMENT VERIFICATION ==========
+  let uploadedDocs = [];
+  let checksDone = false;
+  const DOC_TYPES = {ev:'EV Registration', solar:'Solar Panel', waste:'Waste Management', transport:'Transport Pass'};
+  const FILE_ICONS = {pdf:'📄', jpg:'🖼️', jpeg:'🖼️', png:'🖼️'};
+  const REQ_KEYS = ['ev','solar','waste','transport'];
+
+  function getExt(name){ return name.split('.').pop().toLowerCase(); }
+  function fmtSize(b){ return b < 1024*1024 ? (b/1024).toFixed(1)+' KB' : (b/(1024*1024)).toFixed(1)+' MB'; }
+
+  // File input handler
+  document.getElementById('fileInput').addEventListener('change', e => handleFiles(e.target.files));
+
+  // Drag and drop
+  const uploadArea = document.getElementById('uploadArea');
+  uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag'); });
+  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag'));
+  uploadArea.addEventListener('drop', e => {
+    e.preventDefault(); uploadArea.classList.remove('drag');
+    handleFiles(e.dataTransfer.files);
+  });
+
+  function handleFiles(files){
+    Array.from(files).forEach(f => {
+      if(uploadedDocs.find(d => d.name === f.name)) return;
+      if(f.size > 5*1024*1024){ showToast('File too large: '+f.name+' (max 5 MB)'); return; }
+      // auto-assign doc type by guessing from filename keywords
+      let type = 'other';
+      const low = f.name.toLowerCase();
+      if(low.includes('ev')||low.includes('electric')||low.includes('rc')) type='ev';
+      else if(low.includes('solar')||low.includes('panel')) type='solar';
+      else if(low.includes('waste')||low.includes('compost')||low.includes('recycle')) type='waste';
+      else if(low.includes('metro')||low.includes('bus')||low.includes('pass')||low.includes('transport')) type='transport';
+      else type = REQ_KEYS[uploadedDocs.length % 4]; // fallback cycle
+      uploadedDocs.push({name:f.name, size:f.size, ext:getExt(f.name), type, status:'pending'});
+    });
+    checksDone = false;
+    renderDocList();
+    updateStep1Next();
+    updateStepperProgress();
+  }
+
+  function renderDocList(){
+    const list = document.getElementById('docList');
+    if(!uploadedDocs.length){ list.innerHTML=''; return; }
+    list.innerHTML = uploadedDocs.map((d,i) => `
+      <div class="doc-item">
+        <div class="doc-item-icon">${FILE_ICONS[d.ext]||'📎'}</div>
+        <div class="doc-item-info">
+          <div class="doc-item-name">${d.name}</div>
+          <div class="doc-item-meta">${d.ext.toUpperCase()} · ${fmtSize(d.size)} · ${DOC_TYPES[d.type]||'Other'}</div>
+          <span class="doc-status pending">⏳ Pending verification</span>
+        </div>
+        <button class="doc-item-remove" onclick="removeDoc(${i})" title="Remove">✕</button>
+      </div>
+    `).join('');
+    // update req cards
+    REQ_KEYS.forEach(key => {
+      const card = document.querySelector(`.req-card[data-req="${key}"]`);
+      const tick = document.getElementById('tick-'+key);
+      const has = uploadedDocs.some(d => d.type === key);
+      if(has){ card.classList.add('fulfilled'); tick.textContent='✓'; }
+      else { card.classList.remove('fulfilled'); tick.textContent=''; }
+    });
+  }
+
+  function removeDoc(i){
+    uploadedDocs.splice(i,1);
+    renderDocList();
+    updateStep1Next();
+  }
+
+  function updateStep1Next(){
+    const btn = document.getElementById('btnNext1');
+    const hint = document.getElementById('uploadHint');
+    btn.disabled = uploadedDocs.length === 0;
+    hint.textContent = uploadedDocs.length
+      ? uploadedDocs.length+' document'+(uploadedDocs.length>1?'s':'')+' ready'
+      : 'Upload at least one document to continue';
+  }
+
+  // Stepper progress connector line
+  function updateStepperProgress(){
+    const s = document.getElementById('verifyStepper');
+    const active = parseInt(s.dataset.step||'1');
+    const pct = active === 1 ? '0%' : active === 2 ? '50%' : '100%';
+    s.style.setProperty('--prog', pct);
+  }
+
+  function goStep(n){
+    // hide all panels
+    document.querySelectorAll('.verify-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.vstep').forEach((s,i) => {
+      s.classList.remove('active','done');
+      if(i+1 < n) s.classList.add('done');
+      else if(i+1 === n) s.classList.add('active');
+    });
+    document.getElementById('verifyStepper').dataset.step = n;
+    updateStepperProgress();
+
+    if(n === 2){
+      document.getElementById('vpanel2').classList.add('active');
+      runChecks();
+    } else if(n === 3){
+      document.getElementById('vpanel3').classList.add('active');
+      renderReviewTable();
+    } else {
+      document.getElementById('vpanel1').classList.add('active');
+    }
+
+    // scroll to section
+    document.getElementById('verify').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  // Simulated progressive checks
+  function runChecks(){
+    checksDone = false;
+    document.getElementById('btnNext2').disabled = true;
+    document.getElementById('checkResults').style.display = 'none';
+    const checks = ['chk1','chk2','chk3','chk4','chk5'];
+    const pcts = [20, 40, 60, 80, 100];
+    const fill = document.getElementById('vpFill');
+    const pctLabel = document.getElementById('vpPct');
+    // reset dots
+    checks.forEach(id => {
+      const d = document.getElementById(id);
+      d.className = 'vp-check-dot spin';
+      d.textContent = '';
+    });
+    fill.style.width = '0%'; pctLabel.textContent = '0%';
+
+    let i = 0;
+    function runNext(){
+      if(i >= checks.length){ finishChecks(); return; }
+      const dot = document.getElementById(checks[i]);
+      dot.className = 'vp-check-dot spin';
+      setTimeout(() => {
+        dot.className = 'vp-check-dot pass';
+        dot.textContent = '✓';
+        fill.style.width = pcts[i]+'%';
+        pctLabel.textContent = pcts[i]+'%';
+        i++;
+        setTimeout(runNext, 480);
+      }, 820);
+    }
+    runNext();
+  }
+
+  function finishChecks(){
+    checksDone = true;
+    // Mark all docs as verified (demo)
+    uploadedDocs.forEach(d => d.status = 'verified');
+    // Show results
+    const resultEl = document.getElementById('checkedDocList');
+    resultEl.innerHTML = uploadedDocs.map(d => `
+      <div class="doc-item">
+        <div class="doc-item-icon">${FILE_ICONS[d.ext]||'📎'}</div>
+        <div class="doc-item-info">
+          <div class="doc-item-name">${d.name}</div>
+          <div class="doc-item-meta">${d.ext.toUpperCase()} · ${fmtSize(d.size)}</div>
+          <span class="doc-status verified">✅ Verified</span>
+        </div>
+        <span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--clay); font-size:0.9rem;">+100 pts</span>
+      </div>
+    `).join('');
+    document.getElementById('checkResults').style.display = 'block';
+    document.getElementById('btnNext2').disabled = false;
+    showToast('All checks passed — '+uploadedDocs.length+' document'+(uploadedDocs.length>1?'s':'')+' verified! ✅');
+  }
+
+  function renderReviewTable(){
+    const tbody = document.getElementById('reviewBody');
+    tbody.innerHTML = uploadedDocs.map(d => `
+      <tr>
+        <td><b>${d.name}</b></td>
+        <td>${DOC_TYPES[d.type]||'Other'}</td>
+        <td style="font-family:'JetBrains Mono',monospace; font-size:0.82rem;">${fmtSize(d.size)}</td>
+        <td><span class="badge-verified">✅ Verified</span></td>
+        <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--clay);">+100 pts</td>
+      </tr>
+    `).join('');
+    document.getElementById('totalBonusPts').textContent = '+' + (uploadedDocs.length * 100).toLocaleString() + ' pts';
+
+    // consent re-check
+    document.getElementById('consentCheck').checked = false;
+    document.getElementById('btnSubmit').disabled = true;
+    document.getElementById('consentCheck').onchange = function(){
+      document.getElementById('btnSubmit').disabled = !this.checked;
+    };
+  }
+
+  function submitVerification(){
+    // Award points
+    const bonus = uploadedDocs.length * 100;
+    points += bonus;
+    navPoints.textContent = points.toLocaleString();
+    updateRewardStates();
+
+    // Show success panel
+    document.querySelectorAll('.verify-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.vstep').forEach(s => s.classList.add('done'));
+    document.getElementById('vpanelSuccess').classList.add('active');
+    document.getElementById('verifyId').textContent = Math.random().toString(36).slice(2,8).toUpperCase();
+    showToast('🎉 Submitted! +' + bonus + ' bonus points credited on approval.');
+    document.getElementById('verify').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  function resetVerification(){
+    uploadedDocs = [];
+    checksDone = false;
+    document.querySelectorAll('.verify-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('vpanel1').classList.add('active');
+    document.querySelectorAll('.vstep').forEach((s,i) => {
+      s.classList.remove('active','done');
+      if(i===0) s.classList.add('active');
+    });
+    document.getElementById('verifyStepper').dataset.step = 1;
+    updateStepperProgress();
+    renderDocList();
+    updateStep1Next();
+    document.getElementById('fileInput').value = '';
+  }
+
+  // ---------- INIT ----------
+  [kmRange, acRange, elecRange, dietRange, flightRange].forEach(el => {
+    el.addEventListener('input', render);
+  });
+  navPoints.textContent = points.toLocaleString();
+  render();
+  renderRewards();
+  renderLeaderboard();
+  renderTrail();
+</script>
+
+</body>
+</html>
